@@ -1,7 +1,6 @@
 import { MonteCarloMotor } from "../src/monteCarlo";
 import { Scope, ResultData } from "../src/models/models";
-import { EvalFunction, ResultSetDependencies } from "mathjs";
-import { compileExpresion } from "../src/parse";
+import { compileToNative, NativeFunction } from "../src/parse";
 
 describe('MonteCarloMotor', () => {
     let motor : MonteCarloMotor
@@ -19,9 +18,9 @@ describe('MonteCarloMotor', () => {
         }
         let funct : string = "(5*x^2+4)/(3*x)";
         let result: ResultData | null = null
-    
+
         try {
-            let functCompiled: EvalFunction = compileExpresion(funct);
+            let functCompiled: NativeFunction = compileToNative(funct, [scope.variable]);
             result = motor.monteCarloEvaluationNVar(functCompiled, dim, [scope]);
         } catch (error) {
             console.error("❌ Test 1 fallido:", error);
@@ -38,11 +37,10 @@ describe('MonteCarloMotor', () => {
             {variable : "y", lim_inf : 1, lim_sup : 6}
         ]
         let funct : string = "(5*x^2*y+4)/(3*x*y^3)";
-        let start = performance.now()
         let result : ResultData | null = null;
-        
+
         try{
-            let functCompiled : EvalFunction = compileExpresion(funct);
+            let functCompiled : NativeFunction = compileToNative(funct, scopes.map(s => s.variable));
             result = motor.monteCarloEvaluationNVar(functCompiled, dim, scopes);
         }catch(error) {
             console.error("❌ Test 2 fallido:", error);
@@ -71,7 +69,7 @@ describe('MonteCarloMotor', () => {
         let funct: string = "x1^2 + x2^3 + x3^2 + x4^2 + x5^2 + x6^2 + x7^2 + x8^3 + x9^2 + x10^3";
         let result: ResultData | null = null;
         try {
-            let functCompiled: EvalFunction = compileExpresion(funct);
+            let functCompiled: NativeFunction = compileToNative(funct, scopes.map(s => s.variable));
             result = motor.monteCarloEvaluationNVar(functCompiled, dim, scopes);
         }catch(error) {
             console.error("❌ Test 3 fallido:", error);

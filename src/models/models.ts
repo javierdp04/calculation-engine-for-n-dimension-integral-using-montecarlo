@@ -11,8 +11,3 @@ export interface ResultData {
     variance : number;
     error : number
 }
-
-export interface VariableSample {
-    variable : string;
-    randomValues : number[];
-}
