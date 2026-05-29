@@ -5,40 +5,39 @@ import { Scope, ResultData, VariableSample } from "./models/models";
 
 export class MonteCarloMotor {
     public monteCarloEvaluationNVar(functCompiled : EvalFunction, dim : number, scope : Scope[]) : ResultData{
+        if (dim<1) throw Error("Dimension is not valid");
+        if (!scope || scope.length == 0) throw Error("Scope is not valid");
+        scope.forEach( s => {
+            if (s.lim_inf >= s.lim_sup) {
+                throw new Error(`Limits of variable: ${s.variable} are inconsistent`);
+            }
+        })
+        
+        let randomValues : VariableSample[] = this.generateRandomValuesInRange(scope, dim);
 
-    if(dim<1) throw Error("Dimension is not valid");
-    if(!scope || scope.length == 0) throw Error("Scope is not valid");
-    scope.forEach( s => {
-        if (s.lim_inf >= s.lim_sup) {
-            throw new Error(`Limits of variable: ${s.variable} are inconsistent`);
+        let sumOfPoints : number = 0;
+        let sumOfSquares : number = 0;
+
+        for (let i = 0; i < dim; i++) {
+            const z = functCompiled.evaluate(this.RandomNumbersAdaptater(randomValues, i));
+            sumOfPoints += z;
+            sumOfSquares += (z * z);
         }
-    })
-    
-    let randomValues : VariableSample[] = this.generateRandomValuesInRange(scope, dim);
 
-    let sumOfPoints : number = 0;
-    let sumOfSquares : number = 0;
+        let mean : number = sumOfPoints / dim;
+        let meanOfSquares : number = sumOfSquares / dim;
 
-    for (let i = 0; i < dim; i++) {
-        const z = functCompiled.evaluate(this.RandomNumbersAdaptater(randomValues, i));
-        sumOfPoints += z;
-        sumOfSquares += (z * z);
-    }
+        let varianceValue : number = Math.max(0, meanOfSquares - (mean * mean));
+        let standarDesviation : number = Math.sqrt(varianceValue);
 
-    let mean : number = sumOfPoints / dim;
-    let meanOfSquares : number = sumOfSquares / dim;
-
-    let varianceValue : number = Math.max(0, meanOfSquares - (mean * mean));
-    let standarDesviation : number = Math.sqrt(varianceValue);
-
-    let volume : number = scope.reduce((acc, s) => acc * (s.lim_sup - s.lim_inf), 1);
+        let volume : number = scope.reduce((acc, s) => acc * (s.lim_sup - s.lim_inf), 1);
 
 
-    return {
-        result: volume*mean,
-        variance: varianceValue,
-        error: volume * (standarDesviation / Math.sqrt(dim))
-    };
+        return {
+            result: volume*mean,
+            variance: varianceValue,
+            error: volume * (standarDesviation / Math.sqrt(dim))
+        };
 }
 
     private generateRandomValuesInRange(scope : Scope[], dim : number) : VariableSample[] {
