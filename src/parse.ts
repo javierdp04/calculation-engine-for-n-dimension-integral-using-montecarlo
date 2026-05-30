@@ -1,8 +1,8 @@
 import { compile, parse, MathNode } from 'mathjs'
 import { EvalFunction } from "mathjs";
 
-export function compileExpresion(stringExpresion : string) : EvalFunction {
-    return compile(stringExpresion)
+export function compileExpression(stringExpression : string) : EvalFunction {
+    return compile(stringExpression)
 }
 
 export type NativeFunction = (...args : number[]) => number;
@@ -38,7 +38,7 @@ function gen(node : MathNode, variables : Set<string>) : string {
             const name = (node as any).name;
             if (CONSTANTS[name] !== undefined) return CONSTANTS[name];
             if (!variables.has(name)) {
-                throw new Error(`Variable no declarada en el scope: ${name}`);
+                throw new Error(`Undeclared variable in scope: ${name}`);
             }
             return name;
         }
@@ -58,26 +58,26 @@ function gen(node : MathNode, variables : Set<string>) : string {
             }
 
             const jsOp = BINARY_OP[op];
-            if (jsOp === undefined) throw new Error(`Operador no soportado: ${op}`);
+            if (jsOp === undefined) throw new Error(`Unsupported operator: ${op}`);
             return `(${gen(args[0], variables)} ${jsOp} ${gen(args[1], variables)})`;
         }
 
         case "FunctionNode": {
             const name = (node as any).fn.name;
             const jsFn = FUNCTIONS[name];
-            if (jsFn === undefined) throw new Error(`Funcion no soportada: ${name}`);
+            if (jsFn === undefined) throw new Error(`Unsupported function: ${name}`);
             const inner = (node as any).args.map((a : MathNode) => gen(a, variables)).join(", ");
             return `${jsFn}(${inner})`;
         }
 
         default:
-            throw new Error(`Nodo no soportado: ${node.type}`);
+            throw new Error(`Unsupported node: ${node.type}`);
     }
 }
 
 
-export function compileToNative(stringExpresion : string, variables : string[]) : NativeFunction {
-    const tree = parse(stringExpresion);
+export function compileToNative(stringExpression : string, variables : string[]) : NativeFunction {
+    const tree = parse(stringExpression);
     const body = gen(tree, new Set(variables));
     return new Function(...variables, `return ${body};`) as NativeFunction;
 }

@@ -2,8 +2,8 @@ import { EvalFunction } from "mathjs";
 
 export interface Scope {
     variable : string;
-    lim_inf: number;
-    lim_sup : number;
+    lowerLimit: number;
+    upperLimit : number;
 }
 
 export interface ResultData {
