@@ -1,16 +1,25 @@
 {
   "name": "calculointegrales",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "TypeScript library that computes n-dimensional definite integrals using the Monte Carlo method.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "directories": {
     "test": "test"
   },
   "scripts": {
+    "build": "tsc",
     "test": "jest"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "monte-carlo",
+    "integration",
+    "numerical-integration",
+    "definite-integral",
+    "math",
+    "typescript"
+  ],
+  "author": "Javier de Pablos <javierdepablos04@gmail.com>",
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {

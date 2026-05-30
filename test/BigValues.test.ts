@@ -52,7 +52,7 @@ describe('BigValues', () => {
         expect(result!.result).toBeLessThan(22.1459172165788 + 4*result!.error);
     });
 
-    it("Test for dim = 1_000_000_000", () => {
+    it("Test for dim = 500_000_000", () => {
         let dim : number = 1_000_000_000;
         let scope : Scope = {
             variable : "x",
